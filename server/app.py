@@ -58,6 +58,24 @@ class Handler(BaseHTTPRequestHandler):
        self.end_headers()
        self.wfile.write(content)
        return            
+     if path.startswith("/"):
+            from mimetypes import guess_type
+            import posixpath
+            from urllib.parse import unquote
+
+            relative = unquote(path).lstrip("/")
+            website = (ROOT / "website").resolve()
+            file = (website / relative).resolve()
+
+            if file.is_relative_to(website) and file.is_file():
+                content = file.read_bytes()
+                mime = guess_type(str(file))[0] or "application/octet-stream"
+                self.send_response(200)
+                self.send_header("Content-Type", mime)
+                self.send_header("Content-Length", str(len(content)))
+                self.end_headers()
+                self.wfile.write(content)
+                return
   if path=='/api/health':return self.reply({'ok':True,'mode':'manual-payment-verification','amount_kgs':399,'whatsapp_api_configured':bool(WA_TOKEN and WA_PHONE_ID)})
   if path=='/admin':
    content=(ROOT/'server/admin.html').read_bytes();self.send_headers(200,'text/html; charset=utf-8',len(content));return self.wfile.write(content)
