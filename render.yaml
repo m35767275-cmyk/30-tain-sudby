@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: 30-tain-sudby-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server/app.py
+    envVars:
+      - key: ORACLE_ADMIN_TOKEN
+        generateValue: true
+      - key: ORACLE_SITE_ORIGIN
+        sync: false
+      - key: ORACLE_ADMIN_WHATSAPP
+        sync: false
+      - key: ORACLE_DB
+        value: /var/data/orders.sqlite3
+    disk:
+      name: oracle-orders
+      mountPath: /var/data
+      sizeGB: 1
