@@ -49,6 +49,15 @@ class Handler(BaseHTTPRequestHandler):
  def do_OPTIONS(self):self.send_headers(204)
  def do_GET(self):
   path=urllib.parse.urlparse(self.path).path
+        if path == "/":
+            page = (ROOT / "website" / "index.html")
+            content = page.read_bytes()
+            self.send_response(200)            
+            self.send_header("Content-Type", "text/html;charset=utf-8")
+            self.send_header("Content-Lenght",str(len(content)))
+            self.end_headers()
+            self.wfile.write(content)
+            return            
   if path=='/api/health':return self.reply({'ok':True,'mode':'manual-payment-verification','amount_kgs':399,'whatsapp_api_configured':bool(WA_TOKEN and WA_PHONE_ID)})
   if path=='/admin':
    content=(ROOT/'server/admin.html').read_bytes();self.send_headers(200,'text/html; charset=utf-8',len(content));return self.wfile.write(content)
