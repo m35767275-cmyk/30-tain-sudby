@@ -12,7 +12,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.graphics import renderPDF
 from svglib.svglib import svg2rlg
 
-ROOT=Path(__file__).resolve().parents[1]
+ROOT=Path(__file__).resolve().parents
 SIGNS=['Овен','Телец','Близнецы','Рак','Лев','Дева','Весы','Скорпион','Стрелец','Козерог','Водолей','Рыбы']
 SOURCE=(ROOT/'texts/30_tain_personalizaciya.md').read_text(encoding='utf-8')
 COMPAT={(x['sign_1'],x['sign_2']):x for x in json.loads((ROOT/'texts/compatibility_12x12.json').read_text(encoding='utf-8'))}
