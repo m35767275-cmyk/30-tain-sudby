@@ -49,7 +49,7 @@ class Handler(BaseHTTPRequestHandler):
  def do_OPTIONS(self):self.send_headers(204)
  def do_GET(self):
   path=urllib.parse.urlparse(self.path).path
-   if path == "/":
+       if path == "/":
         page = (ROOT / "website" / "index.html")
         content = page.read_bytes()
         self.send_response(200)            
