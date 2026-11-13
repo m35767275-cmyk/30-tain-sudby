@@ -58,7 +58,7 @@ class Handler(BaseHTTPRequestHandler):
        self.end_headers()
        self.wfile.write(content)
        return            
-     if path.startswith("/"):
+   if path in ("/app.js", "/config.js", "/qr.png"):
             from mimetypes import guess_type
             import posixpath
             from urllib.parse import unquote
