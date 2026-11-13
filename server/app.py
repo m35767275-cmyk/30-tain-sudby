@@ -58,7 +58,7 @@ class Handler(BaseHTTPRequestHandler):
        self.end_headers()
        self.wfile.write(content)
        return            
-   if path in ("/app.js", "/config.js", "/qr.png"):
+    if path in ("/app.js", "/config.js", "/qr.png"):
             from mimetypes import guess_type
             import posixpath
             from urllib.parse import unquote
@@ -76,14 +76,14 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(content)
                 return
-  if path=='/api/health':return self.reply({'ok':True,'mode':'manual-payment-verification','amount_kgs':399,'whatsapp_api_configured':bool(WA_TOKEN and WA_PHONE_ID)})
-  if path=='/admin':
+   if path=='/api/health':return self.reply({'ok':True,'mode':'manual-payment-verification','amount_kgs':399,'whatsapp_api_configured':bool(WA_TOKEN and WA_PHONE_ID)})
+   if path=='/admin':
    content=(ROOT/'server/admin.html').read_bytes();self.send_headers(200,'text/html; charset=utf-8',len(content));return self.wfile.write(content)
-  if path=='/api/admin/orders':
+   if path=='/api/admin/orders':
    if not self.admin():return self.reply({'error':'Доступ запрещён'},401)
    with connect() as db:rows=db.execute('SELECT id,created_at,name,phone,status,payment_reference,paid_at,sent_at,send_error FROM orders ORDER BY created_at DESC LIMIT 300').fetchall()
    return self.reply({'orders':[dict(zip(['id','created_at','name','phone','status','payment_reference','paid_at','sent_at','send_error'],r)) for r in rows]})
-  if path.startswith('/api/admin/pdf/'):
+   if path.startswith('/api/admin/pdf/'):
    if not self.admin():return self.reply({'error':'Доступ запрещён'},401)
    oid=path.rsplit('/',1)[-1]
    with connect() as db:row=db.execute('SELECT answers,partner_sign,status FROM orders WHERE id=?',(oid,)).fetchone()
@@ -94,7 +94,7 @@ class Handler(BaseHTTPRequestHandler):
  def do_POST(self):
   path=urllib.parse.urlparse(self.path).path
   try:
-   if path=='/api/orders':
+    if path=='/api/orders':
     x=self.body();name=x.get('name');phone=x.get('phone');answers=x.get('answers');partner=x.get('partner_sign') or None;language=x.get('language','ru')
     if not isinstance(name,str) or not 1<=len(name.strip())<=90:raise ValueError('Укажите имя')
     if not isinstance(phone,str) or not re.fullmatch(r'\+?[1-9][0-9 ()-]{7,19}',phone):raise ValueError('Укажите международный номер WhatsApp')
@@ -107,7 +107,7 @@ class Handler(BaseHTTPRequestHandler):
     oid='TSD-'+secrets.token_hex(7).upper()
     with connect() as db:db.execute('INSERT INTO orders (id,created_at,name,phone,answers,partner_sign,language,consent,status) VALUES (?,?,?,?,?,?,?,?,?)',(oid,now(),name.strip(),digits,json.dumps(answers,ensure_ascii=False),partner,language,1,'pending'))
     return self.reply({'order_id':oid,'status':'pending','amount_kgs':399,'admin_whatsapp':ADMIN_WA},201)
-   if path.startswith('/api/admin/'):
+    if path.startswith('/api/admin/'):
     if not self.admin():return self.reply({'error':'Доступ запрещён'},401)
     oid=path.rsplit('/',1)[-1]
     with connect() as db:row=db.execute('SELECT id,name,phone,answers,partner_sign,status FROM orders WHERE id=?',(oid,)).fetchone()
@@ -118,7 +118,7 @@ class Handler(BaseHTTPRequestHandler):
      if row[5]!='pending':return self.reply({'error':'Заказ уже обработан'},409)
      with connect() as db:db.execute('UPDATE orders SET status=?,payment_reference=?,paid_at=? WHERE id=?',('paid',reference,now(),oid))
      return self.reply({'order_id':oid,'status':'paid','pdf_ready':True})
-    if path.startswith('/api/admin/send-whatsapp/'):
+     if path.startswith('/api/admin/send-whatsapp/'):
      if row[5] not in ('paid','sent'):return self.reply({'error':'Платёж не подтверждён'},403)
      pdf=make_pdf(json.loads(row[3]),row[4],oid)
      try:message_id=wa_send(row,pdf)
@@ -130,6 +130,6 @@ class Handler(BaseHTTPRequestHandler):
    return self.reply({'error':'Не найдено'},404)
   except ValueError as e:return self.reply({'error':str(e)},400)
   except Exception:logging.exception('Request error');return self.reply({'error':'Ошибка сервера'},500)
-if __name__=='__main__':
- if len(ADMIN_TOKEN)<24:logging.warning('ORACLE_ADMIN_TOKEN not configured: admin disabled')
+     if __name__=='__main__':
+     if len(ADMIN_TOKEN)<24:logging.warning('ORACLE_ADMIN_TOKEN not configured: admin disabled')
  print('Server running on port',PORT,flush=True);ThreadingHTTPServer((HOST,PORT),Handler).serve_forever()
